@@ -2,6 +2,8 @@
 
 一个测试模型对 **公开 OI 题目难度评级一致性** 的小型 Benchmark。包含87题，每题输入为题面、去重题解与std，预测洛谷2026新版八档难度，主指标为Spearman相关系数。
 
+[在线评分网站](https://semsuezhang.github.io/LuoguBench/) · [下载参与者材料](https://github.com/SemsueZhang/LuoguBench/releases/download/v0.2.0/luogubench-participant-0.2.0.zip)
+
 ## 最简单的用法
 
 1. 下载参与者材料，让模型逐题预测1–8的难度等级。
