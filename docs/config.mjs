@@ -96,5 +96,5 @@ export default {
     "B6f0ef04d51c6"
   ],
   "repo_url": "https://github.com/SemsueZhang/LuoguBench",
-  "download_url": "https://github.com/SemsueZhang/LuoguBench/releases/download/v0.2.1/luogubench-participant-0.2.1.zip"
+  "download_url": "https://github.com/SemsueZhang/LuoguBench/releases/download/v0.2.2/luogubench-participant-0.2.2.zip"
 };

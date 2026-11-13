@@ -5,7 +5,8 @@ import sys
 
 def predict(request):
     # The complete fixed prompt is request["messages"][0]["content"].
-    # Use a new conversation for EVERY call. Disable tools/retrieval/history.
+    # Send only these messages for EVERY call; do not reuse conversation history.
+    # Requests may run concurrently. Disable tools/retrieval/history.
     # Generation settings are in request["generation"].
     # Call your chosen local model, CLI, or client here, then parse its JSON output.
     # Return exactly {"id": ..., "level": integer, "label": ..., "reason": ...}.

@@ -49,10 +49,10 @@ python3 -m luogubench check-bundle benchmark
 运行你的适配器：
 
 ```bash
-python3 -m luogubench run --bundle benchmark --adapter my_adapter.py --model my-model --reasoning medium --out runs/my-model
+python3 -m luogubench run --bundle benchmark --adapter my_adapter.py --model my-model --reasoning medium --jobs 8 --out runs/my-model
 ```
 
-先检查两题的接入可加 `--limit 2`，之后用相同命令加 `--resume` 完成其余题目。超时默认 180 秒，可用 `--timeout` 调整。失败题保留错误记录，恢复时只重试未得到有效输出的题，不覆盖已有有效预测。完整 87 题作答后才能提交。运行元数据保留适配器调用次数，重试情况需如实报告，不根据标签或得分重新选择答案。
+`--jobs 8` 同时处理最多8题，每题仍然是独立输入，结果自动按题号合并到 `predictions.jsonl`，可直接上传网站。默认并发为1。先检查两题的接入可加 `--limit 2`，之后用相同命令加 `--resume` 完成其余题目。续跑可调整并发数量。超时默认 180 秒，可用 `--timeout` 调整。失败题保留错误记录，恢复时只重试未得到有效输出的题，不覆盖已有有效预测。完整 87 题作答后才能提交。运行元数据保留适配器调用次数，重试情况需如实报告，不根据标签或得分重新选择答案。
 
 先跑一个完全离线的流程演示：
 

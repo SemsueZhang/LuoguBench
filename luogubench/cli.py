@@ -86,6 +86,7 @@ def main():
     p.add_argument("--temperature", type=float)
     p.add_argument("--max-output-tokens", type=int)
     p.add_argument("--timeout", type=float, default=180)
+    p.add_argument("--jobs", type=int, default=1, help="maximum independent adapter calls in parallel (default: 1)")
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--resume", action="store_true")
     p.add_argument("--limit", type=int)
@@ -142,7 +143,8 @@ def main():
         elif args.command == "run":
             result = run_adapter(args.bundle, args.adapter, args.out, args.model, reasoning=args.reasoning,
                                  temperature=args.temperature, max_output_tokens=args.max_output_tokens,
-                                 timeout=args.timeout, resume=args.resume, limit=args.limit)
+                                 timeout=args.timeout, resume=args.resume, limit=args.limit,
+                                 jobs=args.jobs, progress=True)
         elif args.command == "import-run":
             result = import_predictions(args.bundle, args.predictions, args.out, args.model,
                                         reasoning=args.reasoning, protocol=args.protocol)
