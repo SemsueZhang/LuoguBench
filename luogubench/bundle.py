@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import re
 
-from .core import LEVELS, sha, validate_input_item
+from .core import LEVELS, sha, validate_input_item, write_json, write_jsonl
 from .prompt import OUTPUT_SCHEMA
 
 PRIMARY_PROTOCOL = "isolated-text-v1"
@@ -114,12 +114,43 @@ def load_bundle(path):
             "protocol_note": protocol_path.read_text(encoding="utf-8")}
 
 
-def item_prompt(bundle, item):
+def common_prompt(bundle):
     return (bundle["rubric"].rstrip() + "\n\n" + bundle["protocol_note"].rstrip() +
-            "\n\n<problem_material>\n" + json.dumps(item, ensure_ascii=False, indent=2) +
+            "\n\n")
+
+
+def item_prompt(bundle, item):
+    return (common_prompt(bundle) +
+            "<problem_material>\n" + json.dumps(item, ensure_ascii=False, indent=2) +
             "\n</problem_material>\n")
 
 
 def prompt_digest(bundle):
     return sha(json.dumps([{ "id": item["id"], "sha256": sha(item_prompt(bundle, item))}
                            for item in bundle["items"]], ensure_ascii=False, sort_keys=True))
+
+
+def export_prompts(bundle_path, out):
+    """Export the exact user messages used by the runner, without model calls."""
+    bundle = load_bundle(bundle_path)
+    out = Path(out)
+    if out.exists() and any(out.iterdir()):
+        raise ValueError("Prompt export destination must be empty")
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "prompt.txt").write_text(common_prompt(bundle).rstrip() + "\n", encoding="utf-8")
+    write_jsonl(out / "requests.jsonl", [
+        {"id": item["id"], "protocol_id": PRIMARY_PROTOCOL,
+         "messages": [{"role": "user", "content": item_prompt(bundle, item)}],
+         "response_schema": bundle["schema"]}
+        for item in bundle["items"]
+    ])
+    manifest = {
+        "export_format_version": 1, "dataset_id": bundle["manifest"]["dataset_id"],
+        "dataset_version": bundle["manifest"]["dataset_version"],
+        "protocol_id": PRIMARY_PROTOCOL, "n": len(bundle["ids"]),
+        "bundle_fingerprint": bundle["fingerprint"], "prompt_set_sha256": prompt_digest(bundle),
+        "common_prompt_sha256": file_digest(out / "prompt.txt"),
+        "requests_file_sha256": file_digest(out / "requests.jsonl"),
+    }
+    write_json(out / "manifest.json", manifest)
+    return manifest

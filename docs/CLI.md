@@ -1,4 +1,5 @@
 > 这是保留的严格CLI研究流程，可选使用。网站主流程只需上传一个JSONL答案文件，无需以下元数据或ZIP。
+> 所有正式测试均应遵守 [统一 Prompt 与测试协议](../PROMPT.md)。`run` 自动使用同样的逐题输入，也可用 `export-prompts --bundle benchmark --out my-prompts` 离线导出完整请求。
 
 # LuoguBench：参与测试
 

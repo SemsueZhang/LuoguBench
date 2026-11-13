@@ -102,6 +102,8 @@ form.addEventListener("submit", async (event) => {
       report_version: 1, result_id: crypto.randomUUID(), graded_at_utc: new Date().toISOString(),
       dataset_id: config.dataset_id, dataset_version: config.dataset_version, bundle_fingerprint: config.bundle_fingerprint,
       submission_name: sourceName, protocol_id: "web-file-v1", execution: "browser-local", model_identity_independently_verified: false,
+      required_generation_protocol_id: config.protocol_id, required_prompt_set_sha256: config.prompt_set_sha256,
+      generation_protocol_independently_verified: false,
       prediction_sha256: await sha256(sourceText), rationale_quality_scored: false, bootstrap_computed: false,
       metrics: summarize(actual, rows.map((r) => r.level)),
     };

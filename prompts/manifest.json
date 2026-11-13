@@ -1,0 +1,11 @@
+{
+  "export_format_version": 1,
+  "dataset_id": "luogubench-87-v1",
+  "dataset_version": "0.1.0",
+  "protocol_id": "isolated-text-v1",
+  "n": 87,
+  "bundle_fingerprint": "2257910dd8aa104c3f4d1a538480437d80e2f54a36eee97f1bc8767ace7cf4da",
+  "prompt_set_sha256": "5bbc97e19f405ad731d934638581ac88328bd088eb728d5c070b05c3744a838c",
+  "common_prompt_sha256": "2167809bf6b14900bc95f33c8648963ed572f53c620db77dc3b31b8a3a951aa8",
+  "requests_file_sha256": "7337d1d8b1bb025cda14b989ba77580b4fc7f0bb89eeac401745a45190c4ec2b"
+}

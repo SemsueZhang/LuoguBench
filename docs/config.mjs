@@ -1,6 +1,7 @@
 export default {
   "dataset_id": "luogubench-87-v1",
   "dataset_version": "0.1.0",
+  "protocol_id": "isolated-text-v1",
   "n": 87,
   "bundle_fingerprint": "2257910dd8aa104c3f4d1a538480437d80e2f54a36eee97f1bc8767ace7cf4da",
   "prompt_set_sha256": "5bbc97e19f405ad731d934638581ac88328bd088eb728d5c070b05c3744a838c",
@@ -95,5 +96,5 @@ export default {
     "B6f0ef04d51c6"
   ],
   "repo_url": "https://github.com/SemsueZhang/LuoguBench",
-  "download_url": "https://github.com/SemsueZhang/LuoguBench/releases/download/v0.2.0/luogubench-participant-0.2.0.zip"
+  "download_url": "https://github.com/SemsueZhang/LuoguBench/releases/download/v0.2.1/luogubench-participant-0.2.1.zip"
 };

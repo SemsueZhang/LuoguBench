@@ -13,7 +13,7 @@ from .core import LEVELS, read_jsonl, sha, validate_input_item, validate_label, 
 from .prompt import OUTPUT_SCHEMA, RUBRIC
 from .score import score
 from .verify import verify
-from .bundle import load_bundle
+from .bundle import export_prompts, load_bundle
 from .runner import import_predictions, run_adapter
 from .submission import create_submission, grade_submission
 
@@ -75,6 +75,9 @@ def main():
     p.add_argument("--out", type=Path, required=True)
     p = sub.add_parser("check-bundle", help="validate a public bundle without labels")
     p.add_argument("bundle", type=Path)
+    p = sub.add_parser("export-prompts", help="export the exact fixed per-question messages, without model calls")
+    p.add_argument("--bundle", type=Path, default=Path("benchmark"))
+    p.add_argument("--out", type=Path, required=True)
     p = sub.add_parser("run", help="run a local adapter once per independent question")
     p.add_argument("--bundle", type=Path, default=Path("benchmark"))
     p.add_argument("--adapter", type=Path, required=True)
@@ -134,6 +137,8 @@ def main():
             checked = load_bundle(args.bundle)
             result = {"valid": True, "items": len(checked["ids"]), "dataset_id": checked["manifest"]["dataset_id"],
                       "bundle_fingerprint": checked["fingerprint"]}
+        elif args.command == "export-prompts":
+            result = export_prompts(args.bundle, args.out)
         elif args.command == "run":
             result = run_adapter(args.bundle, args.adapter, args.out, args.model, reasoning=args.reasoning,
                                  temperature=args.temperature, max_output_tokens=args.max_output_tokens,
