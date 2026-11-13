@@ -1,0 +1,24 @@
+{
+  "id": "B4f21a59794fe",
+  "statement_md": "## 题目背景\n\n\n## 题目描述\n\n无向连通图 $G$ 有 $n$ 个点，$n-1$ 条边。点从 $1$ 到 $n$ 依次编号，编号为 $i$ 的点的权值为 $W_i$，每条边的长度均为 $1$。图上两点 $(u, v)$ 的距离定义为 $u$ 点到 $v$ 点的最短距离。对于图 $G$ 上的点对 $(u, v)$，若它们的距离为 $2$，则它们之间会产生 $W_v \\times W_u$ 的联合权值。\n\n请问图 $G$ 上所有可产生联合权值的有序点对中，联合权值最大的是多少？所有联合权值之和是多少？\n\n## 输入格式\n\n第一行包含 $1$ 个整数 $n$。\n\n接下来 $n-1$ 行，每行包含 $2$ 个用空格隔开的正整数 $u,v$，表示编号为 $u$ 和编号为 $v$ 的点之间有边相连。\n\n最后 $1$ 行，包含 $n$ 个正整数，每两个正整数之间用一个空格隔开，其中第 $i$ 个整数表示图 $G$ 上编号为 $i$ 的点的权值为 $W_i$。\n\n## 输出格式\n\n输出共 $1$ 行，包含 $2$ 个整数，之间用一个空格隔开，依次为图 $G$ 上联合权值的最大值和所有联合权值之和。由于所有联合权值之和可能很大，输出它时要对 $10007$ 取余。\n\n## 提示\n\n**样例解释**\n\n![原文插图](assets/I943b03576895d352.png)\n\n本例输入的图如上所示，距离为 $2$ 的有序点对有$(1,3)$ 、$(2,4)$ 、$(3,1)$ 、$(3,5) $、$(4,2)$ 、$(5,3) $。\n\n其联合权值分别为 $2,15,2,20,15,20$。其中最大的是 $20$，总和为 $74$。\n\n \n**数据说明**\n\n- 对于 $30\\%$ 的数据，$2 < n \\leq 100$；\n- 对于 $60\\%$ 的数据，$2 < n \\leq 2000$；\n- 对于 $100\\%$ 的数据，$2 < n \\leq 2\\times 10^5$，$0 < W_i \\leq 10000$。\n\n保证一定存在可产生联合权值的有序点对。\n\n## 样例 #1\n\n### 样例输入 #1\n\n```text\n5  \n1 2  \n2 3\n3 4  \n4 5  \n1 5 2 3 10 \n```\n\n### 样例输出 #1\n\n```text\n20 74\n```\n",
+  "solutions": [
+    {
+      "method_id": "method_1",
+      "editorial_md": "首先我们知道，一张 $n$ 个点 $n-1$ 条边的无向连通图是一颗树，而树上两点之间路径和距离是唯一的。我们现在要求所有距离为 $2$ 的点对 $(u,v)$，那么 $(u,v)$ 有唯一的一个中转点 $s$，满足存在 $u\\to s$ 和 $s\\to v$ 的边。\n\n先考虑联合权值最大值，对于每个 $s$，我们求出连向 $s$ 的点的 $W_i$ 的最大值和非严格次大值（可以与最大值重复），相乘再取最大即可。\n\n再考虑联合权值之和，我们枚举 $s$，求出连接向 $s$ 的点的集合 $T$，那么我们所有联合权值之和就是 $\\sum_{i\\in T}\\sum_{j\\in\\land i<j}2\\times W_i\\times W_j$。回想一下初中数学的因式分解，可以发现这个值等于 $(\\sum_{i\\in T}W_i)^2-\\sum_{i\\in T}W_i^2$。所以我们对于每个 $s$，求出连向 $s$ 的点的 $W_i$ 的和以及平方的和即可。\n\n注意联合权值最大值不需要取模。\n\n时间复杂度 $O(n)$。\n\n代码展示：\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include<bits/stdc++.h>\n#define int long long\n#define mod 10007\nusing namespace std;\nint n,x,y,w[200001],a[200001],b[200001],c[200001],d[200001],s1,s2;\nvector<int>g[200001];\nsigned main(){\n\tcin.tie(nullptr)->sync_with_stdio(0);\n\tcin>>n;\n\tfor(int i=2;i<=n;i++){\n\t\tcin>>x>>y;\n\t\tg[x].push_back(y);\n\t\tg[y].push_back(x);\n\t}\n\tfor(int i=1;i<=n;i++){\n\t\tcin>>w[i];\n\t}\n\tfor(int i=1;i<=n;i++){\n\t\tx=y=0;\n\t\tfor(int j:g[i]){\n\t\t\tif(w[j]>w[x]){\n\t\t\t\tx=j;\n\t\t\t}\n\t\t}\n\t\tfor(int j:g[i]){\n\t\t\tif(w[j]>w[y]&&j!=x){\n\t\t\t\ty=j;\n\t\t\t}\n\t\t}\n\t\ts1=max(s1,w[x]*w[y]);\n\t\tx=y=0;\n\t\tfor(int j:g[i]){\n\t\t\tx=(x+w[j])%mod;\n\t\t\ty=(y+w[j]*w[j])%mod;\n\t\t}\n\t\ts2=(s2+x*x%mod-y+mod)%mod;\n\t}\n\tcout<<s1<<' '<<s2;\n\treturn 0;\n}\n"
+      }
+    },
+    {
+      "method_id": "method_2",
+      "editorial_md": "## solution\n\n先要知道有 $n$ 个点 $n-1$ 条边的无向联通图就是一棵树，显然，若树上两个点距离为 $2$，这两个点只能是**兄弟**或**祖孙**关系，这两个可以分开算。\n\n我们先考虑第二问。设 $W_i$ 是 $i$ 点的权，$S_i$ 表示 $i$ 的子节点点权之和，$i$ 有 $k$ 个儿子。那么这部分兄弟对答案的贡献就是 $$\\begin{aligned} \\sum_{j=1}^k W_j \\times (S_i-W_j) \\end{aligned}$$，为了方便实现我们可以记录一个 $sum$ 累加点权，边加边乘，和这个式子是等价的。这部分祖孙对答案的贡献是 $$\\begin{aligned} \\sum_{j=1}^k W_i \\times S_j \\end{aligned}$$。\n\n第一问是类似的。额外维护一个 $M_i$ 表示 $i$ 点最大儿子的权值，遍历时维护一个 $Max$ 表示当前最大权值，若 $j$ 是 $i$ 的儿子，兄弟间的答案就是 $W_j \\times Max$ 的最大值，祖孙间的答案就是 $W_i \\times M_j$ 的最大值。\n\n$S$ 和 $M$ 都可以预处理，计算答案扫一遍树就行，时间复杂度 $\\mathcal O(n)$。\n\n## code\n\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include <bits/stdc++.h>\nusing namespace std;\nconst int N=2e5+5, mod=10007;\nlong long n, w[200005], s[N], mx[N], ans1, ans2; \nvector<int> e[200005];\nvoid dfs(int u, int fa){\n\tlong long sum = 0, Max = 0;\n\tfor (int i:e[u]) {\n\t\tif (i==fa)\n\t\t\tcontinue;\n\t\tdfs(i, u);\n\t\ts[u]=(s[u]+w[i])%mod;\n\t\tmx[u]=max(mx[u], w[i]);\n\t\tans2=(ans2+w[u]*s[i]%mod+w[i]*sum%mod)%mod;\n\t\tans1=max({ans1, w[u]*mx[i], w[i]*Max});\n\t\tsum=(sum+w[i])%mod;\n\t\tMax=max(Max, w[i]);\n\t}\n}\nint main () {\n\tcin >> n;\n\tfor (int i=1, u, v; i<n; ++i)\n\t\tcin >> u >> v,\n\t\te[u].push_back(v),\n\t\te[v].push_back(u);\n\tfor (int i=1; i<=n; ++i)\n\t\tcin >> w[i];\n\tdfs(1, 1);\n\tcout << ans1 << ' ' << 2*ans2%mod;\n\treturn 0;\n}\n"
+      }
+    }
+  ]
+}

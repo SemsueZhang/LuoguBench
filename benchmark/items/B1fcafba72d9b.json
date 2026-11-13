@@ -1,0 +1,15 @@
+{
+  "id": "B1fcafba72d9b",
+  "statement_md": "## 题目描述\n\n某校大门外长度为 $l$ 的马路上有一排树，每两棵相邻的树之间的间隔都是 $1$ 米。我们可以把马路看成一个数轴，马路的一端在数轴 $0$ 的位置，另一端在 $l$ 的位置；数轴上的每个整数点，即 $0,1,2,\\dots,l$，都种有一棵树。\n\n\n由于马路上有一些区域要用来建地铁。这些区域用它们在数轴上的起始点和终止点表示。已知任一区域的起始点和终止点的坐标都是整数，区域之间可能有重合的部分。现在要把这些区域中的树（包括区域端点处的两棵树）移走。你的任务是计算将这些树都移走后，马路上还有多少棵树。\n\n## 输入格式\n\n第一行有两个整数，分别表示马路的长度 $l$ 和区域的数目 $m$。\n\n接下来 $m$ 行，每行两个整数 $u, v$，表示一个区域的起始点和终止点的坐标。\n\n## 输出格式\n\n输出一行一个整数，表示将这些树都移走后，马路上剩余的树木数量。\n\n## 提示\n\n**【数据范围】**\n\n- 对于 $20\\%$ 的数据，保证区域之间没有重合的部分。\n- 对于 $100\\%$ 的数据，保证 $1 \\leq l \\leq 10^4$，$1 \\leq m \\leq 100$，$0 \\leq u \\leq v \\leq l$。\n\n**【题目来源】**\n\n\n## 样例 #1\n\n### 样例输入 #1\n\n```text\n500 3\n150 300\n100 200\n470 471\n```\n\n### 样例输出 #1\n\n```text\n298\n```\n",
+  "solutions": [
+    {
+      "method_id": "method_1",
+      "editorial_md": "### 思路\n按题意模拟即可。  \n不妨开一个数组 $tree_i$ 来记录位置 $i$ 的树是否已经被移走，每次移走树的时候直接 $u\\sim v$ 遍历并修改这个数组即可。  \n每次遍历，如果 $tree_i=0$ 说明未被移走，移走的数量 $sum\\gets sum+1$。  \n本来有 $l+1$ 棵树，移走了 $sum$ 棵，还剩下 $l+1-sum$ 棵。\n\n时间复杂度为 $O(m\\times l)$。\n\n---\n### 代码\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include<bits/stdc++.h>\nusing namespace std;\nbool tree[10002];\nint main(){\n\tint m,l,sum=0;\n\tscanf(\"%d%d\",&l,&m);\n\tfor(int i=0;i<m;i++){\n\t\tint le,ri;\n\t\tscanf(\"%d%d\",&le,&ri);\n\t\tfor(int i=le;i<=ri;i++){\n\t\t\tif(tree[i]==0){\n\t\t\t\tsum++;\n\t\t\t\ttree[i]=1;\n\t\t\t}\n\t\t}\n\t}\n\tprintf(\"%d\",l+1-sum);\n\treturn 0;\n}\n"
+      }
+    }
+  ]
+}

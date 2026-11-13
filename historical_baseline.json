@@ -1,0 +1,11 @@
+{
+  "model": "gpt-6-luna",
+  "reasoning_effort": "medium",
+  "protocol": "legacy-agent-3x29",
+  "n": 87,
+  "spearman_rho": 0.9396889301881765,
+  "accuracy": 0.5517241379310345,
+  "within_one_level": 0.9425287356321839,
+  "mae": 0.5057471264367817,
+  "comparable_to_primary_protocol": false
+}

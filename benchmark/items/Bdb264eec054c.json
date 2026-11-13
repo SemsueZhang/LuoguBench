@@ -1,0 +1,15 @@
+{
+  "id": "Bdb264eec054c",
+  "statement_md": "## 题目描述\n\n给定 $n$ 个正整数 $a_i$，请你在其中选出三个数 $i, j, k$（$i \\ne j$，$i \\ne k$，$j \\ne k$），使得 $(a_i + a_j) \\bmod a_k$ 的值最大。\n\n## 输入格式\n\n第一行，一个整数 $n$，表示数字个数。  \n第二行，$n$ 个整数，表示 $a_i$。\n\n## 输出格式\n\n输出一行，一个整数，表示答案。\n\n## 提示\n\n对于 $30 \\%$ 的数据，$n \\le 100$。  \n对于 $60 \\%$ 的数据，$n \\le 3000$。  \n对于 $100 \\%$ 的数据，$3 \\le n \\le 2 \\times {10}^5$，$1 \\le a_i \\le {10}^8$。\n\n## 样例 #1\n\n### 样例输入 #1\n\n```text\n6\n4 7 7 5 2 2\n```\n\n### 样例输出 #1\n\n```text\n6\n```\n\n## 样例 #2\n\n### 样例输入 #2\n\n```text\n见附件中的 mod/mod2.in。\n```\n\n### 样例输出 #2\n\n```text\n见附件中的 mod/mod2.ans。\n```\n",
+  "solutions": [
+    {
+      "method_id": "method_1",
+      "editorial_md": "[题目传送门](/problem/[题号已隐藏])\n\n题目大意：给定序列 $a$，求 $\\displaystyle\\max_{i\\ne j,i\\ne k,j\\ne k}(a_i+a_j)\\bmod a_k$。\n\n考虑固定模数 $a_k$。\n\n令所有 $i\\ne k$ 的 $a_i\\bmod a_k$ 构成序列 $b$，那么答案最大只有两种情况：\n\n1. $b_i+b_j\\ge a_k$，那么因为 $b_i+b_j<2a_k$，因此 $ans=b_i+b_j-a_k$。要使 $ans$ 最大化，只需取最大的 $b_i,b_j$ 即可；\n\n2. $b_i+b_j<a_k$，直接对 $b$ 排序跑一遍双指针即可得出最大的 $ans$。\n\n这样做一遍时间复杂度是 $O(n\\log n)$，但要做 $n$ 遍，难以承受。\n\n于是考虑减少做的次数。\n\n首先对于相同的 $a_k$，答案肯定是一样的，只需做一遍。\n\n其次，我们对于 $a$ 按从大到小的顺序来做，如果当做到 $a_i$ 时 $ans\\ge a_i$，那就没必要做了。正确性显然。\n\n分析一下优化后的时间复杂度。\n\n令 $a$ 已经从大到小排好序并去重。设 $a_1>\\cdots>a_x>ans\\ge a_{x+1}>\\cdots>a_n$。\n\n因为 $ans$ 是最大的答案，那么 $\\forall1\\le i\\le x-2$，有 \n\n$$(a_{i+1}+a_{i+2})\\bmod a_i\\le ans$$\n\n显然\n\n$$a_i>a_{i+1}>a_{i+2}>ans$$\n\n那么\n\n$$(a_{i+1}+a_{i+2})\\bmod a_i\\le ans<a_{i+1}+a_{i+2}<2a_i$$\n\n所以\n\n$$a_i\\le a_{i+1}+a_{i+2}<2a_i$$\n\n于是把取模干掉，得到\n\n$$a_{i+1}+a_{i+2}-a_i\\le ans$$\n\n变形得到\n\n$$(a_{i+1}-ans)+(a_{i+2}-ans)\\le(a_i-ans)$$\n\n令 $f_i=a_i-ans$，那么\n\n$$f_i\\ge f_{i+1}+f_{i+2}$$\n\n发现这东西长的很像倒着的 [斐波那契数列](//oeis.org/A000045)。这玩意儿是呈指数级增长的。\n\n又有 $f_1=a_1-ans\\le a_1\\le V$，其中 $V$ 代表值域，因此 $f_i$ 的数量至多只有 $\\log V$ 级别。\n\n换句话说，我们只会扫至多 $O(\\log V)$ 次就能找到最终答案。\n\n因此总的时间复杂度为 $O(n\\log n\\log V)$。核心代码如下：\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include<iostream>\n#include<cstdio>\n#include<set>\n#include<cstring>\n#include<algorithm>\n#define INF 0x3f3f3f3f\nusing namespace std;\nconst int N=2e5+5;\nint n,tot,ans,a[N],b[N];\nset<int>st; \nint bs(int x){ \n\tset<int>::iterator it=st.lower_bound(x);\n\tif(it==st.end())return INF;\n\treturn (*it);\n}\nint main(){\n\tcin>>n;\n\tfor(int i=1;i<=n;i++)\n\t\tscanf(\"%d\",&b[i]);\n\tsort(b+1,b+n+1,greater<int>());\n\tint tot=0;a[++tot]=b[1]; \n\tfor(int i=2,l=1;i<=n;i++){\n\t\tif(b[i]==b[l]&&i-l<=1)a[++tot]=b[i];\n\t\telse if(b[i]!=b[l])a[++tot]=b[i],l=i;\n\t}\n\tfor(register int i=1;i<=tot;i++)if(ans<=a[i]+1){\n\t\tst.clear(); \n\t\tfor(register int j=1;j<=tot;j++){\n\t\t\tif(i==j)continue; \n\t\t\tint t1=bs(a[j]%a[i]+1-a[i]); \n\t\t\tif(t1==INF){ \n\t\t\t\tint t2=bs(1-a[i]); \n\t\t\t\tif(t2!=INF)ans=max(ans,(a[j]%a[i]-t2)%a[i]); \n\t\t\t}\n\t\t\telse ans=max(ans,(a[j]%a[i]-t1)%a[i]); \n\t\t\tst.insert(-a[j]%a[i]); \n\t\t}\n\t}\n\tcout<<ans<<endl;\n\treturn 0;\n}\n"
+      }
+    }
+  ]
+}

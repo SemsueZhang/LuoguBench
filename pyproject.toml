@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "luogubench"
+version = "0.2.0"
+description = "A small, auditable Luogu difficulty correlation benchmark"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+luogubench = "luogubench.cli:main"
+
+[tool.setuptools]
+packages = ["luogubench"]

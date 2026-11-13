@@ -1,0 +1,24 @@
+{
+  "id": "B63bfa64a9eac",
+  "statement_md": "## 题目描述\n\n给出正整数 $n$，要求按如下方式构造数列：\n\n1. 只有一个数 $n$ 的数列是一个合法的数列。\n2. 在一个合法的数列的末尾加入一个正整数，但是这个正整数不能超过该数列最后一项的一半，可以得到一个新的合法数列。\n\n请你求出，一共有多少个合法的数列。两个合法数列 $a, b$ 不同当且仅当两数列长度不同或存在一个正整数 $i \\leq |a|$，使得 $a_i \\neq b_i$。\n\n## 输入格式\n\n输入只有一行一个整数，表示 $n$。\n\n## 输出格式\n\n输出一行一个整数，表示合法的数列个数。\n\n## 提示\n\n### 样例 1 解释\n\n满足条件的数列为：\n- $6$\n- $6, 1$\n- $6, 2$\n- $6, 3$\n- $6, 2, 1$\n- $6, 3, 1$\n\n### 数据规模与约定\n\n对于全部的测试点，保证 $1 \\leq n \\leq 10^3$。\n\n### 说明\n\n本题数据来源是 [竞赛来源已隐藏] [来源分组已隐藏]第一题，但是原题的题面描述和数据不符，故对题面进行了修改，使之符合数据。原题面如下，谨供参考：\n\n> 我们要求找出具有下列性质数的个数（包含输入的正整数 $n$）。\n>\n> 先输入一个正整数 $n$（$n \\le 1000$），然后对此正整数按照如下方法进行处理：\n>\n> 1. 不作任何处理；\n> 2. 在它的左边拼接一个正整数，但该正整数不能超过原数，或者是上一个被拼接的数的一半；\n> 3. 加上数后，继续按此规则进行处理，直到不能再加正整数为止。\n\n感谢 @[dbxxx](/user/120868) 对本题情况的反馈，原题面的问题见本贴。\n\n## 样例 #1\n\n### 样例输入 #1\n\n```text\n6\n```\n\n### 样例输出 #1\n\n```text\n6\n```\n",
+  "solutions": [
+    {
+      "method_id": "method_1",
+      "editorial_md": "### 思路\n\n容易看出本题应使用递推。\n\n假设 $f_i$ 表示当 $n = i$ 时的答案数量，那么 $f_i$ 就可以从 $f_1$ 到 $f_{\\lfloor\\frac{i}{2}\\rfloor}$ 转移得来，再加上单独一个 $i$ 的序列，故得出递推式为 $\nf_i = 1 + \\sum\\limits_{j = 1}^{\\lfloor\\frac{i}{2}\\rfloor}{f_j}\n$。  \n不难得出边界为 $f_1 = 1$。\n\n### 实现\n\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "# include <iostream>\nusing namespace std;\nint f[1005] = {0,1};\nint main(){\n\tint n; cin >> n;\n\tfor (int i = 2;i <= n;i++){\n        f[i] = 1;\n\t\tfor (int j = 1;j <= i / 2;j++) f[i] += f[j];\n\t}cout << f[n];\n\treturn 0;\n}\n"
+      }
+    },
+    {
+      "method_id": "method_2",
+      "editorial_md": "设 $f_i$ 表示当 $n=i$ 时的答案，则 $f_i=f_1+f_2+\\ldots+f_{\\left\\lfloor n/2\\right\\rfloor}+1$（因为 $n=i$ 时，序列的第一个数为 $i$），初始时 $f_1=1$。\n\n直接循环递推求解是 $O(n^2)$ 的，虽然可以通过本题，我们考虑优化。\n\n设 $g_i=f_1+f_2+\\cdots+f_i$，则转移为 $f_i=g_{\\left\\lfloor n/2\\right\\rfloor}+1$ 即可，这样做时间复杂度是 $O(n)$ 的。\n\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include<iostream>\n#include<algorithm>\nconst int sz=1010;\nint f[sz],g[sz];\nint main(){\n    std::ios::sync_with_stdio(false);\n    std::cin.tie(nullptr);\n    int n;\n    std::cin>>n;\n    f[1]=g[1]=1;\n    for(int i=2;i<=n;i++)f[i]=g[i/2]+1,g[i]=g[i-1]+f[i];\n    std::cout<<f[n]<<\"\\n\";\n    return 0;\n}\n"
+      }
+    }
+  ]
+}

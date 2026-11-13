@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "level": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8
+    },
+    "label": {
+      "type": "string",
+      "enum": [
+        "入门",
+        "普及-",
+        "普及",
+        "普及+/提高-",
+        "提高",
+        "提高+/省选-",
+        "省选/NOI-",
+        "NOI/NOI+/CTS"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "id",
+    "level",
+    "label",
+    "reason"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "Bcc90fbf63a7c",
+  "statement_md": "## 题目背景\n\n\n## 题目描述\n\n试计算在区间 $1$ 到 $n$ 的所有整数中，数字 $x$（$0\\le x\\le9$）共出现了多少次？例如，在 $1$ 到 $11$ 中，即在 $1,2,3,4,5,6,7,8,9,10,11$ 中，数字 $1$ 出现了 $4$ 次。\n\n## 输入格式\n\n$2$ 个整数 $n,x$，之间用一个空格隔开。\n\n## 输出格式\n\n$1$ 个整数，表示 $x$ 出现的次数。\n\n## 提示\n\n对于 $100\\%$ 的数据，$1\\le n\\le 10^6$，$0\\le x \\le 9$。\n\n## 样例 #1\n\n### 样例输入 #1\n\n```text\n11 1\n```\n\n### 样例输出 #1\n\n```text\n4\n```\n",
+  "solutions": [
+    {
+      "method_id": "method_1",
+      "editorial_md": "## 题目描述\n\n试计算在区间 $1$ 到 $n$ 的所有整数中，数字 $x$ 出现的次数。\n\n## 解题思路\n\n通过样例，一个整数中出现多次 $x$，都计算在总次数中。\n\n如何计算整数中 $x$ 出现的次数呢？可以发现，对整数 $t$ 来说，$t \\mod 10$ 可以取其个位，$t \\gets\\left\\lfloor\\frac{t}{10}\\right\\rfloor$ 可以舍弃其个位：因为 $\\frac{t}{10}$ **将个位移动到十分位上，将十位移动到个位上**……再向下取整，就只剩下原来的十位及更高位。\n\n当然，在 C++ 中，使用整型除法就可以直接实现这个效果了。\n\n整体时间复杂度 $O(n \\log n)$，可以通过此题。\n\n## 代码\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include<bits/stdc++.h>\nusing namespace std;\n\nint n,x,ans;\n\nint check(int k,int x)  \n{\n\tint num=0;  \n\twhile (k)  \n\t{\n\t\tif (k%10==x) num++;  \n\t\tk/=10;  \n\t}\n\treturn num;\n}\n\nint main()\n{\n\tcin>>n>>x;\n\tfor (int i=1;i<=n;i++)  \n\t{\n\t\tans+=check(i,x);\n\t}\n\tcout<<ans<<\"\\n\";\n\treturn 0;\n}\n"
+      }
+    },
+    {
+      "method_id": "method_2",
+      "editorial_md": "这题是[竞赛来源已隐藏][来源分组已隐藏]第一题，nlog10n的算法不难想出，这里不再说明。\n\n在真正的比赛中，只要想到能ac的算法就可以，但是在练习中还是要锻炼自己的思维，多想想更优的算法。\n\n不难发现，即使不用计算机，答案也很容易求出，如：\n\nn=728，x=7\n\n可以按照这样的思路：\n\n个位7:73个 7,17,...,727\n\n十位7:70个 70~79,170~179,...,670~679\n\n百位7:29个 700~728\n\n答案是172\n\n这样，就不难写出log10n的算法，这是一个巨大的改进！\n\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include<iostream>\n#include<cstdio>\nusing namespace std;\nint main(){\n    int n,x,m=1,ans=0;\n    scanf(\"%d%d\",&n,&x);\n    while(m<=n){\n        int a=n/(m*10),b=n/m%10,c=n%m;  \n        if(x){\n            if(b>x) ans+=(a+1)*m;  \n            if(b==x) ans+=a*m+c+1;  \n            if(b<x) ans+=a*m;  \n        }\n        else{  \n            if(b) ans+=a*m;\n            else ans+=(a-1)*m+c+1;\n        }\n        m*=10;\n    }\n    printf(\"%d\\n\",ans);\n    return 0;\n}\n"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "Bf978a219afbf",
+  "statement_md": "## 题目背景\n\n对应的选择、判断题：[外部链接已隐藏]\n\n## 题目描述\n\n小 A 有一串包含 $n$ 枚宝石的宝石项链，这些宝石按照在项链中的顺序依次以 $1,2,\\ldots,n$ 编号，第 $n$ 枚宝石与第 $1$ 枚宝石相邻。项链由 $m$ 种宝石组成，其中第 $i$ 枚宝石种类为 $t_i$。\n\n小 A 想将宝石项链分给他的好朋友们。具体而言，小 A 会将项链划分为若干**连续段**，并且需要保证每段都包含全部 $m$ 种宝石。请帮小 A 计算在满足条件的前提下，宝石项链最多可以划分为多少段。\n\n## 输入格式\n\n第一行，两个正整数 $n,m$，分别表示宝石项链中的宝石的数量与种类数。\n\n第二行，$n$ 个正整数 $t_1,t_2,\\ldots,t_n$，表示每枚宝石的种类。\n\n## 输出格式\n\n输出一行，一个整数，表示宝石项链最多可以划分的段数。\n\n## 提示\n\n对于 $40\\%$ 的测试点，保证 $2\\le n\\le 1000$。\n\n对于所有测试点，保证 $2\\le n\\le 10^5$，$2\\le m\\le n$，$1\\le t_i\\le m$，保证 $1,2,\\ldots,m$ 均在 $t_1,t_2,\\ldots,t_n$ 中出现。\n\n## 样例 #1\n\n### 样例输入 #1\n\n```text\n6 2\n1 2 1 2 1 2\n```\n\n### 样例输出 #1\n\n```text\n3\n```\n\n## 样例 #2\n\n### 样例输入 #2\n\n```text\n7 3\n3 1 3 1 2 1 2\n```\n\n### 样例输出 #2\n\n```text\n2\n```\n",
+  "solutions": [
+    {
+      "method_id": "method_1",
+      "editorial_md": "被八级创飞了……\n\n## Analysis\n\n首先通过将数组复制一倍破环为链，即 $a_{i+n} \\leftarrow a_i$（$1 \\leqslant i \\leqslant n$），方便处理环跨 $1$、跨 $n$。\n\n假设我们已经知道从每个起点 $i$ 开始，最短的包含所有 $m$ 种宝石的段的长度，那么为了最大化段数，我们应该贪心地每次切出该长度，然后从下一个位置开始，因为这时恰好含 $m$ 种。求出这个值可以使用双指针滑动窗口。\n\n求出后可以枚举起点进行贪心，时间复杂度 $\\Theta(n^2)$。\n\n考虑使用倍增优化，定义 $st_{k,i}$ 为从 $i$ 开始连续走 $2^k$ 段的总宝石数。可以分成两个长度为 $2^{k-1}$ 的段，转移为：\n\n$$\nst_{k,i} \\leftarrow st_{k-1,i} + st_{k-1,(i+st_{k-1,i}-1) \\bmod n + 1}\n$$\n\n求答案时，枚举起点 $i$，从高位到低位尝试增加 $2^k$ 段。\n\n## AC Code\n\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include <bits/stdc++.h>\nusing namespace std;\n#define int long long\n\nconst int N = 1e5 + 5, LOG = 20, INF = 1e18;\n\nint n, m;\nint a[N * 2], st[LOG][N], cnt[N];\n\nint jump(int x){\n\tint now = 0, sec = 0;\n\tfor(int i = LOG - 1; i >= 0; -- i)\n\t\tif(now + st[i][x] <= n){\n\t\t\tnow += st[i][x];\n\t\t\tsec += (1 << i);\n\t\t\tx = (x + st[i][x] - 1) % n + 1;\n\t\t}\n\treturn sec;\n}\n\nsigned main(){\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\n\t\n\tcin >> n >> m;\n\tfor(int i = 1; i <= n; ++ i)\n\t\tcin >> a[i], a[i + n] = a[i];\n\t\n\tint r = 0, tot = 0;\n\tfor(int i = 1; i <= n; ++ i){\n\t\twhile(tot < m && r < 2 * n)\n\t\t\tif(!(cnt[a[++ r]] ++))\n\t\t\t\t++ tot;\n\t\tst[0][i] = r - i + 1;\n\t\tif(!(-- cnt[a[i]]))\n\t\t\t-- tot;\n\t}\n\t\n\tfor(int i = 1; i < LOG; ++ i)\n\t\tfor(int j = 1; j <= n; ++ j){\n\t\t\tint to = (j + st[i - 1][j] - 1) % n + 1;\n\t\t\tst[i][j] = min(st[i - 1][j] + st[i - 1][to], INF);\n\t\t}\n\t\n\tint ans = 0;\n\tfor(int i = 1; i <= n; ++ i)\n\t\tans = max(ans, jump(i));\n\t\n\tcout << ans;\n\t\n\treturn 0;\n}\n"
+      }
+    }
+  ]
+}

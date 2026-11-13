@@ -1,0 +1,24 @@
+{
+  "id": "Bae85676cc71b",
+  "statement_md": "## 题目描述\n\n给出一棵二叉树的中序与后序排列。求出它的先序排列。（约定树结点用不同的大写字母表示，且二叉树的节点个数 $ \\le 8$）。\n\n## 输入格式\n\n共两行，均为大写字母组成的字符串，表示一棵二叉树的中序与后序排列。\n\n## 输出格式\n\n共一行一个字符串，表示一棵二叉树的先序。\n\n## 提示\n\n**【题目来源】**\n\n\n## 样例 #1\n\n### 样例输入 #1\n\n```text\nBADC\nBDCA\n```\n\n### 样例输出 #1\n\n```text\nABCD\n```\n",
+  "solutions": [
+    {
+      "method_id": "method_1",
+      "editorial_md": "## 前言\n\n题解审核明天休假，所以赶紧把题解写了……\n\n## 思路\n\n题目大致意思，即已知二叉树的中序后序序列求其先序序列。\\\n下面，我们需要先了解一下二叉树遍历序列的特征：\n\n- 后序序列：树的根节点在序列的最后一位。\n- 中序序列：树的根节点的左侧是其左子树，右侧是其右子树。\n\n拿样例数据举个例子：\n\n- 主树：由后序序列 `BDCA` 可知，根节点为 `A`。又据中序序列 `BADC` 可知，左子树由 `B` 节点构成，右子树由 `DC` 两节点构成。\n- 左子树 `B`：根节点为 `B`，为终端节点（叶节点）。\n- 右子树 `DC`：与之对应的后序序列也为 `DC`，因此同理可知，根节点为 `C`，左子树为 `D`。\n\n打住！这样的过程，怎么有点奇怪…… 这不就是递归深入吗？\\\n没错，这道题的主要解法，就是递归！在经过简单的推论，我们可以得到主要思路如下：\n\n1. 根据后序序列寻找到当前二叉树的根并输出。\n2. 找到当前树的左、右子树所对应的中序、后序序列所在位置，然后递归深入。\n3. 经过层层深入，层层返回，即可得到最终的答案。\n\n## AC Code\n\n虽然代码简单，但思路可能有些复杂，希望大家自己理解！\n\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include <bits/stdc++.h>\nusing namespace std;\nvoid dlr(string z, string h){\n\tif(z.empty() || h.empty()) return;  \n\tchar now_root = *(h.end() - 1);  \n\tcout << now_root;\n\tint zroot_index = z.find(now_root);  \n    dlr(z.substr(0, zroot_index), h.substr(0, zroot_index));  \n    dlr(z.substr(zroot_index + 1), h.substr(zroot_index, h.size() - zroot_index - 1));  \n}\nint main(){\n\tstring z, h;\n\tcin >> z >> h;\n\tdlr(z, h);\n    return 0;\n}\n"
+      }
+    },
+    {
+      "method_id": "method_2",
+      "editorial_md": "看到很多中规中矩的递归题解\n\n这里提供一种新思路——**二叉搜索树**\n\n### 算法背景\n\n\n因为对于二叉搜索树左小右大的原则，其中序遍历即为树中的元素的升序排列；而后序遍历是按先左子右子再根节点的顺序输出；\n\n因此\n对于**二叉搜索树**而言\n\n如果按照其后序遍历的**颠倒**后的顺序插入元素，就可以**还原整棵树**！\n\n原因是在元素x被插入以前，x的父节点已经插入在树中（后序遍历的颠倒后的顺序），因此x一定会插入到原来的树中的位置上。\n\n\n### 算法描述\n\n\n- 对于中序遍历的字符串的字母从小到大标号\n\n- 利用**后序遍历的颠倒后的顺序**把标号插入到二叉搜索树中\n\n- 把这颗二叉搜索树按前序遍历，输出每个结点存储的标号对应的字母\n\n\n### 算法样例\n\n\n- 对于样例的数据\n\nBADC\nBDCA\n- 对中序遍历标号如下\n\nBADC\n1234\n- 因此后序遍历即为\n\n1342\n- 颠倒后\n\n2431\n- 于是按照2431的顺序插入二叉树如下（实在画不了图）\n\n2：左子1，右子4\n\n1：叶节点\n\n4：左子3，右子NULL\n\n3：叶节点\n\n- 因此前序遍历为\n\n2134\n- 对应字母\n\nABCD\n\n### 题解代码\n\n\n[完整参考程序见配套 std]\n",
+      "std": {
+        "language": "cpp17",
+        "interface": "stdin_stdout",
+        "code": "#include<iostream>\n#include<cstring>\n\nusing namespace std;\n\nchar pre[10]; \nchar mid[10]; \nint num[300]; \nchar let[10]; \n\nstruct node \n{\n    int key;\n    node * p=NULL; \n    node * left=NULL; \n    node * right=NULL; \n};\ntypedef struct node * bNode; \n\nbNode tree_insert(bNode tree_root,int nkey) \n{\n    bNode z=new node,y=NULL,x=tree_root;\n    z->key=nkey;\n    while(x!=NULL)\n    {\n        y=x;\n        if(nkey<x->key)x=x->left;\n        else x=x->right;\n    }\n    z->p=y;\n    if(y==NULL)tree_root=z;\n    else if(nkey<y->key)y->left=z;\n    else y->right=z;\n    \n    return tree_root;\n}\n\nvoid tree_preorder(bNode k) \n{\n    if(k==NULL)return;\n    cout<<let[k->key]; \n    tree_preorder(k->left);\n    tree_preorder(k->right);\n}\n\nint main()\n{\n    bNode t1=NULL;\n    cin>>mid>>pre;\n    for(int i=0;mid[i]!='\\0';i++) \n    {\n        num[mid[i]]=i;\n        let[i]=mid[i];\n    }\n    for(int i=strlen(pre)-1;i>=0;i--) \n    {\n        t1=tree_insert(t1,num[pre[i]]);\n    }\n    tree_preorder(t1);\n    return 0;\n}\n"
+      }
+    }
+  ]
+}
