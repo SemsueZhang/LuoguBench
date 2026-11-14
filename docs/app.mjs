@@ -3,12 +3,21 @@ import {parseAnswerFile,summarize,sha256} from './scoring.mjs';
 import {referenceLevels} from './reference.mjs';
 const $=id=>document.getElementById(id);
 let selected=null,report=null;
-const baseline=config.historical_baseline;
-if(baseline){
- const rate=(v)=>`${(v*100).toFixed(1)}%`;
- $('baseline-accuracy').textContent=`${rate(baseline.accuracy)} · ${Math.round(baseline.accuracy*baseline.n)}/${baseline.n}`;
- $('baseline-within').textContent=`${rate(baseline.within_one_level)} · ${Math.round(baseline.within_one_level*baseline.n)}/${baseline.n}`;
- $('baseline-rho').textContent=baseline.spearman_rho.toFixed(4);
+for(const result of config.historical_results??[]){
+ const row=document.createElement('article');row.className='history-result';
+ const name=document.createElement('div');const heading=document.createElement('h3');
+ heading.textContent=result.display_name;name.append(heading);
+ const note=document.createElement('p');note.textContent=result.execution_summary;name.append(note);row.append(name);
+ const values=document.createElement('dl');
+ for(const [label,value] of [
+  ['完全命中率',`${(result.accuracy*100).toFixed(1)}%`],
+  ['相差不超过一档',`${(result.within_one_level*100).toFixed(1)}%`],
+  ['Spearman ρ',result.spearman_rho.toFixed(4)]
+ ]){
+  const group=document.createElement('div');const term=document.createElement('dt');const score=document.createElement('dd');
+  term.textContent=label;score.textContent=value;group.append(term,score);values.append(group);
+ }
+ row.append(values);$('historical-results').append(row);
 }
 const save=(text,name,type='application/json')=>{const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 function reset(){report=null;for(const id of ['accuracy','within-one','rho'])$(id).textContent='—';$('coverage').textContent='等待完整答案';$('exact-count').textContent='预测档位与参考档位相同';$('within-count').textContent='包括完全命中及相邻档位';$('rho-note').textContent='使用并列平均秩计算排序相关性';$('download-report').hidden=true;}
@@ -24,7 +33,7 @@ $('answers').addEventListener('change',async()=>{
   // Ignore a read that completed after the user already selected another file.
   if($('answers').files?.[0]!==file)return;
   const rows=parseAnswerFile(text,config.ids);selected={text,name:file.name,rows};
-  $('filename').textContent=`${file.name} · 已校验 ${rows.length}/87 题`;$('score').disabled=false;
+  $('filename').textContent=`${file.name} · 已校验完整答案`;$('score').disabled=false;
  }catch(error){if($('answers').files?.[0]===file)fail(error);}
 });
 document.querySelector('form').addEventListener('submit',async event=>{
@@ -36,7 +45,7 @@ document.querySelector('form').addEventListener('submit',async event=>{
   report={report_version:2,dataset_id:config.dataset_id,dataset_version:config.dataset_version,bundle_fingerprint:config.bundle_fingerprint,required_generation_protocol_id:config.protocol_id,required_prompt_set_sha256:config.prompt_set_sha256,protocol_id:'web-file-v1',execution:'browser-local',model_identity_independently_verified:false,generation_protocol_independently_verified:false,graded_at_utc:new Date().toISOString(),prediction_sha256:digest,submission_name:source.name,primary_metrics:['accuracy','within_one_level','spearman_rho'],metric_targets:{accuracy:'maximize',within_one_level:1,spearman_rho:1},rationale_quality_scored:false,metrics};
   const pct=x=>`${(100*x).toFixed(1)}%`;
   $('accuracy').textContent=pct(metrics.accuracy);$('within-one').textContent=pct(metrics.within_one_level);$('rho').textContent=metrics.spearman_rho===null?'未定义':metrics.spearman_rho.toFixed(4);
-  $('coverage').textContent=`${metrics.n}/87 题 · 计算完成`;$('exact-count').textContent=`${metrics.exact_matches}/87 题完全一致`;$('within-count').textContent=`${metrics.within_one_count}/87 题 · ${metrics.n-metrics.within_one_count} 题偏差超过一档`;
+  $('coverage').textContent='计算完成';$('exact-count').textContent='预测档位与参考档位相同';$('within-count').textContent='包括完全命中及相邻档位';
   $('rho-note').textContent=metrics.spearman_rho===null?'常数预测的相关系数未定义':'相关系数与命中率分别计算';$('download-report').hidden=false;
  }catch(error){fail(error);}finally{$('score').disabled=!selected;}
 });

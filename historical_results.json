@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "results": [
+    {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "medium",
+      "protocol": "legacy-agent-3x29",
+      "n": 87,
+      "spearman_rho": 0.9396889301881765,
+      "accuracy": 0.5517241379310345,
+      "within_one_level": 0.9425287356321839,
+      "mae": 0.5057471264367817,
+      "comparable_to_primary_protocol": false,
+      "dataset_version": "0.1.0",
+      "comparable_to_current_dataset": false,
+      "date": "2026-11-13",
+      "exact_matches": 48,
+      "within_one_count": 82,
+      "source_metrics_sha256": "7b1986e6eed103487bc7c009240366775b73ca7be3bcfff5930378448954e1a4",
+      "prediction_file_sha256": "90d54d9174405df36d2c6f1d78942708891bc6296fcc455e753e0bc84b2408a2",
+      "id": "gpt-6-luna-original",
+      "display_name": "GPT-6 Luna medium",
+      "source_type": "local_predictions",
+      "execution_summary": "旧数据 v0.1.0 · 3×29 共享上下文"
+    },
+    {
+      "id": "claude-opus-5-5-jason-sun",
+      "model": "Claude Opus 5.5",
+      "display_name": "Claude Opus 5.5",
+      "contributor": "jason_sun",
+      "execution_summary": "jason_sun 贡献 · 截图汇总",
+      "n": 87,
+      "accuracy": 0.575,
+      "within_one_level": 0.966,
+      "spearman_rho": 0.9626,
+      "mae": 0.46,
+      "dataset_version": null,
+      "protocol": null,
+      "reasoning_effort": null,
+      "source_type": "user_provided_screenshot",
+      "source_screenshot_sha256": "1f9d1fa1d7be40e190e94fe00c79ec8f1e918198b669d08c8c00dc96662f7266",
+      "source_values_rounded": true,
+      "display_precision": {
+        "percent_decimal_places": 1,
+        "spearman_decimal_places": 4,
+        "mae_decimal_places": 3
+      },
+      "raw_predictions_available": false,
+      "model_identity_independently_verified": false,
+      "generation_protocol_independently_verified": false,
+      "comparable_to_current_dataset": false,
+      "comparable_to_primary_protocol": false,
+      "note": "用户指定模型名称及贡献者；指标按截图显示值记录。未提供原始预测、测试日期、数据版本或运行协议，未据显示百分比反推命中题数。"
+    }
+  ]
+}

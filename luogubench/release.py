@@ -83,6 +83,13 @@ def release(root, out):
     (participant / "answers-template.jsonl").write_text(
         "".join(json.dumps({"id": item_id, "level": None}) + "\n" for item_id in checked["ids"]), encoding="utf-8")
     write_json(participant / "historical_baseline.json", spec["legacy_baseline"])
+    history = []
+    if spec["legacy_baseline"]:
+        history.append({**spec["legacy_baseline"], "id": "gpt-6-luna-original",
+                        "display_name": "GPT-6 Luna medium", "source_type": "local_predictions",
+                        "execution_summary": "旧数据 v0.1.0 · 3×29 共享上下文"})
+    history.extend(spec.get("historical_contributions", []))
+    write_json(participant / "historical_results.json", {"schema_version": 1, "results": history})
     (participant / ".gitignore").write_text("__pycache__/\n*.pyc\nruns/\n.env\n.env.*\n.dev.vars*\n.DS_Store\n*-submission.zip\n", encoding="utf-8")
     evaluator = out / "evaluator"
     shutil.copytree(participant, evaluator)
