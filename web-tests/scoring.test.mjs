@@ -44,3 +44,9 @@ test("browser reference data and anonymous ID inventory stay aligned", () => {
   assert.ok(reference.every((v) => Number.isInteger(v) && v >= 1 && v <= 8));
   assert.equal(summarize(reference, reference).spearman_rho, 1);
 });
+
+test('exact accuracy, within-one accuracy and rho cannot substitute for each other',()=>{
+  const m=summarize([1,2,3],[2,3,4]);
+  assert.equal(m.accuracy,0);assert.equal(m.within_one_level,1);assert.equal(m.spearman_rho,1);
+  assert.equal(summarize([1,2,3],[1,2,5]).within_one_count,2);
+});

@@ -11,6 +11,7 @@ import shutil
 from .core import (BUCKET_LEVELS, LEVELS, LEAK_PATTERN, code_blocks, sanitize,
                    sha, strip_cpp_comments, write_json, write_jsonl)
 from .prompt import OUTPUT_SCHEMA, RUBRIC, render_prompt
+from .rewrite import apply_rewrite
 
 
 def source_path(root, directory, name):
@@ -93,6 +94,7 @@ def build(root: Path, out: Path):
         used_assets.add(filename)
         return "assets/" + filename
     inputs, labels, provenance, excluded, audit, catalog = [], [], [], [], [], []
+    rewrite_audit = []
     total_articles = 0
     source_index = []
     current_code_paths = set()
@@ -146,6 +148,7 @@ def build(root: Path, out: Path):
             refs.append({**s, "method_id": f"method_{i}", "original_code_sha256": original_code_sha,
                          "input_code_sha256": sha(code), "std_path": str(code_path.relative_to(out))})
         item = {"id": anonymous_id, "statement_md": statement, "solutions": solutions}
+        rewrite_audit.extend(apply_rewrite(root, item))
         if any(LEAK_PATTERN.search(s["editorial_md"]) for s in solutions) or LEAK_PATTERN.search(statement):
             raise ValueError(f"{pid}: leakage scanner still finds explicit identifiers/ratings")
         inputs.append(item)
@@ -159,8 +162,13 @@ def build(root: Path, out: Path):
                         "selected": len(solutions), "rejected": len(m.get("rejected", []))})
     # Stable shuffled order, independent of level and raw directory traversal.
     inputs.sort(key=lambda x: sha("order-v1/" + x["id"]))
+    final_asset_names = set(re.findall(r'!\[原文插图\]\(assets/([A-Za-z0-9_.-]+)\)', json.dumps(inputs, ensure_ascii=False)))
+    for path in (out / "assets").glob("*"):
+        if path.is_file() and path.name not in final_asset_names:
+            path.unlink()
     for filename, rows in [("inputs.jsonl", inputs), ("labels.jsonl", labels), ("provenance.jsonl", provenance),
-                           ("excluded.jsonl", excluded), ("sanitization_audit.jsonl", audit), ("source_index.jsonl", source_index)]:
+                           ("excluded.jsonl", excluded), ("sanitization_audit.jsonl", audit), ("source_index.jsonl", source_index),
+                           ("rewrite_audit.jsonl", rewrite_audit)]:
         write_jsonl(out / filename, rows)
     prompt_dir = out / "prompts"
     prompt_dir.mkdir(parents=True, exist_ok=True)
@@ -181,7 +189,7 @@ def build(root: Path, out: Path):
         writer = csv.DictWriter(f, fieldnames=list(catalog[0]))
         writer.writeheader()
         writer.writerows(catalog)
-    stats = {"dataset_version": "0.1.0", "source_problems": len(list(raw.glob("*/*/statement.md"))),
+    stats = {"dataset_version": "0.2.0", "source_problems": len(list(raw.glob("*/*/statement.md"))),
              "eligible_problems": len(inputs), "excluded_problems": len(excluded), "source_articles": total_articles,
              "families": sum(c["families"] for c in catalog), "selected_methods": sum(c["selected"] for c in catalog),
              "rejected_articles": sum(c["rejected"] for c in catalog),
@@ -190,8 +198,11 @@ def build(root: Path, out: Path):
              "input_characters": sum(len(render_prompt(i)) for i in inputs),
              "image_reference_count": sum(json.dumps(i, ensure_ascii=False).count("![原文插图]") for i in inputs),
              "missing_image_count": sum(json.dumps(i, ensure_ascii=False).count("原文插图，未能获取") for i in inputs),
-             "cached_images_used": len(used_assets),
+             "cached_images_used": len(final_asset_names),
+             "source_images_resolved_before_rewrite": len(used_assets),
              "taxonomy_source": "https://www.luogu.com.cn/discuss/1312513",
              "taxonomy_checked_date": "2026-11-13", "judged_accepted_std_claim": False}
     write_json(out / "statistics.json", stats)
+    if len(list((root / "curation/rewrites").glob("*.json"))) != len(inputs):
+        raise ValueError("Rewrite inventory does not match the complete dataset")
     return stats

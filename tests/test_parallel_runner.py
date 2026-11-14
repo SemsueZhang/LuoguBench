@@ -12,6 +12,8 @@ from luogubench.core import read_jsonl, sha
 from luogubench.runner import run_adapter
 
 ROOT = Path(__file__).resolve().parents[1]
+if not (ROOT / "benchmark").exists():
+    ROOT = ROOT / "publish/LuoguBench"
 
 
 class ParallelRunner(unittest.TestCase):
@@ -70,7 +72,7 @@ print(json.dumps({'prediction':{'id':item_id,'level':1,'label':'入门','reason'
             self.assertIn(self.ids[1], progress.getvalue().splitlines()[0])
             rows = read_jsonl(root / "run/predictions.jsonl")
             self.assertEqual([r["id"] for r in rows], self.ids[:2])
-            published = read_jsonl(ROOT / "prompts/requests.jsonl")
+            published = read_jsonl(ROOT / "docs/requests.jsonl")
             for expected in published[:2]:
                 actual = json.loads((root / f"{expected['id']}.request.json").read_text(encoding="utf-8"))
                 self.assertEqual(actual["messages"], expected["messages"])

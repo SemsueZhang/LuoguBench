@@ -7,12 +7,12 @@ import shutil
 import zipfile
 
 from . import __version__
-from .bundle import PRIMARY_PROTOCOL, PROTOCOL_NOTE, file_digest, load_bundle
+from .bundle import PRIMARY_PROTOCOL, PROTOCOL_NOTE, export_prompts, file_digest, load_bundle
 from .core import sha, write_json
 
 PUBLIC_MODULES = (
     "__init__.py", "__main__.py", "core.py", "metrics.py", "prompt.py", "bundle.py",
-    "runner.py", "submission.py", "score.py", "cli.py", "release.py", "build.py", "verify.py",
+    "runner.py", "submission.py", "score.py", "cli.py", "release.py", "build.py", "verify.py", "rewrite.py",
 )
 
 
@@ -72,8 +72,18 @@ def release(root, out):
                                 ("docs/DATASET_CARD.md", "DATASET_CARD.md"),
                                 ("docs/DATA_NOTICE.md", "DATA_NOTICE.md")]:
         shutil.copy2(root / source, participant / destination)
+    for name in ("AGENT_RUN.md", "PROMPT.md"):
+        if (root / name).exists():
+            shutil.copy2(root / name, participant / name)
+    public_docs = participant / "docs"
+    export_prompts(material_root, public_docs)
+    (public_docs / "manifest.json").rename(public_docs / "prompt-manifest.json")
+    if (root / "docs/CLI.md").exists():
+        shutil.copy2(root / "docs/CLI.md", public_docs / "CLI.md")
+    (participant / "answers-template.jsonl").write_text(
+        "".join(json.dumps({"id": item_id, "level": None}) + "\n" for item_id in checked["ids"]), encoding="utf-8")
     write_json(participant / "historical_baseline.json", spec["legacy_baseline"])
-    (participant / ".gitignore").write_text("__pycache__/\n*.pyc\nruns/\n.env\n.env.*\n*-submission.zip\n", encoding="utf-8")
+    (participant / ".gitignore").write_text("__pycache__/\n*.pyc\nruns/\n.env\n.env.*\n.dev.vars*\n.DS_Store\n*-submission.zip\n", encoding="utf-8")
     evaluator = out / "evaluator"
     shutil.copytree(participant, evaluator)
     (evaluator / "private").mkdir()

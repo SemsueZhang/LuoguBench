@@ -81,6 +81,7 @@ export function summarize(actual, predicted) {
     quadratic_weighted_kappa: expected ? 1 - errors.reduce((s, e) => s + e * e, 0) / expected : null,
     macro_recall: mean(recalls), exact_matches: errors.filter((e) => e === 0).length,
     within_one_count: errors.filter((e) => Math.abs(e) <= 1).length,
+    errors_over_one: errors.filter((e) => Math.abs(e) > 1).length,
   };
 }
 

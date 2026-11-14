@@ -59,6 +59,8 @@ def quadratic_weighted_kappa(x, y, levels=8):
 def summarize(actual, predicted):
     if not actual:
         raise ValueError("Cannot score an empty set")
+    if len(actual) != len(predicted):
+        raise ValueError("Scoring vectors must have the same length")
     errors = [p - a for a, p in zip(actual, predicted)]
     confusion = [[0 for _ in range(8)] for _ in range(8)]
     for a, p in zip(actual, predicted):
@@ -77,6 +79,9 @@ def summarize(actual, predicted):
         "quadratic_weighted_kappa": quadratic_weighted_kappa(actual, predicted),
         "accuracy": sum(e == 0 for e in errors) / len(errors),
         "within_one_level": sum(abs(e) <= 1 for e in errors) / len(errors),
+        "exact_matches": sum(e == 0 for e in errors),
+        "within_one_count": sum(abs(e) <= 1 for e in errors),
+        "errors_over_one": sum(abs(e) > 1 for e in errors),
         "mae": statistics.mean(abs(e) for e in errors),
         "rmse": math.sqrt(statistics.mean(e * e for e in errors)),
         "mean_signed_error": statistics.mean(errors),

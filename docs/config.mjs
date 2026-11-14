@@ -1,10 +1,10 @@
 export default {
-  "dataset_id": "luogubench-87-v1",
-  "dataset_version": "0.1.0",
-  "protocol_id": "isolated-text-v1",
+  "dataset_id": "luogubench-87-rewritten-v2",
+  "dataset_version": "0.2.0",
+  "protocol_id": "isolated-text-v2",
   "n": 87,
-  "bundle_fingerprint": "2257910dd8aa104c3f4d1a538480437d80e2f54a36eee97f1bc8767ace7cf4da",
-  "prompt_set_sha256": "5bbc97e19f405ad731d934638581ac88328bd088eb728d5c070b05c3744a838c",
+  "bundle_fingerprint": "3b6e2c7e8fed3b335a5ef57842f9f9461efd62870aab93b030f3beeebd92fae4",
+  "prompt_set_sha256": "63133c3980ac38cb3487f76c74f53c4195398ed38fcd05a7cbee4f1ff1f614f1",
   "labels_sha256": "9bb71647a553a95602dabf3773507e226d0993847a8f379e063e56e14358bf53",
   "ids": [
     "B58304d76a810",
@@ -95,6 +95,22 @@ export default {
     "B5806b864e012",
     "B6f0ef04d51c6"
   ],
-  "repo_url": "https://github.com/SemsueZhang/LuoguBench",
-  "download_url": "https://github.com/SemsueZhang/LuoguBench/releases/download/v0.2.2/luogubench-participant-0.2.2.zip"
+  "historical_baseline": {
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "protocol": "legacy-agent-3x29",
+    "n": 87,
+    "spearman_rho": 0.9396889301881765,
+    "accuracy": 0.5517241379310345,
+    "within_one_level": 0.9425287356321839,
+    "mae": 0.5057471264367817,
+    "comparable_to_primary_protocol": false,
+    "dataset_version": "0.1.0",
+    "comparable_to_current_dataset": false,
+    "date": "2026-11-13",
+    "exact_matches": 48,
+    "within_one_count": 82,
+    "source_metrics_sha256": "7b1986e6eed103487bc7c009240366775b73ca7be3bcfff5930378448954e1a4",
+    "prediction_file_sha256": "90d54d9174405df36d2c6f1d78942708891bc6296fcc455e753e0bc84b2408a2"
+  }
 };

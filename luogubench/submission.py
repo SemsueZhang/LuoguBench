@@ -104,10 +104,11 @@ def grade_submission(bundle_path, submission_path, labels_path, out, *, allow_de
         "is_demo": run.get("is_demo", False),
         "primary_track_eligible": run["protocol_id"] == PRIMARY_PROTOCOL and not run.get("is_demo", False),
         "rationale_quality_scored": False, "graded_at_utc": utc_now(),
+        "primary_metrics": metrics["primary_metrics"], "metric_targets": metrics["metric_targets"],
         "submission_sha256": file_digest(submission_path), "prediction_sha256": manifest["predictions_sha256"],
         "model_and_execution_attestation": "participant-reported, not independently attested by grader",
     }
-    for key in ("spearman_rho", "kendall_tau_b", "pearson_r", "accuracy", "within_one_level", "mae",
+    for key in ("accuracy", "within_one_level", "spearman_rho", "exact_matches", "within_one_count", "errors_over_one", "kendall_tau_b", "pearson_r", "mae",
                 "rmse", "quadratic_weighted_kappa", "mean_signed_error", "macro_recall", "spearman_bootstrap"):
         if key in metrics:
             public[key] = metrics[key]

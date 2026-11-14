@@ -51,7 +51,10 @@ def score(labels_path, predictions_path, out, allow_partial=False, bootstrap=200
     actual, predicted = [r["actual_level"] for r in rows], [r["predicted_level"] for r in rows]
     metrics = summarize(actual, predicted)
     metrics.update({"total_expected": len(labels), "coverage": len(valid) / len(labels), "invalid": invalid,
-                    "missing": missing, "primary_metric": "spearman_rho", "reason_quality_scored": False,
+                    "missing": missing, "primary_metric": "accuracy",
+                    "primary_metrics": ["accuracy", "within_one_level", "spearman_rho"],
+                    "metric_targets": {"accuracy": "maximize", "within_one_level": 1.0, "spearman_rho": 1.0},
+                    "reason_quality_scored": False,
                     "prediction_file_sha256": sha(Path(predictions_path).read_text()),
                     "label_file_sha256": sha(Path(labels_path).read_text())})
     if bootstrap:
@@ -76,8 +79,8 @@ def score(labels_path, predictions_path, out, allow_partial=False, bootstrap=200
         writer.writerow(["actual/predicted"] + list(LEVELS.values()))
         for label, values in zip(LEVELS.values(), metrics["confusion_matrix"]):
             writer.writerow([label] + values)
-    lines = ["LuoguBench MVP: correlation evaluation", "", f"Coverage: {len(rows)}/{len(labels)}", ""]
-    for key in ["spearman_rho", "kendall_tau_b", "pearson_r", "accuracy", "within_one_level", "mae", "quadratic_weighted_kappa", "mean_signed_error", "macro_recall"]:
+    lines = ["LuoguBench: rating agreement", "", f"Coverage: {len(rows)}/{len(labels)}", ""]
+    for key in ["accuracy", "within_one_level", "spearman_rho", "mae", "kendall_tau_b", "pearson_r", "quadratic_weighted_kappa", "mean_signed_error", "macro_recall"]:
         value = metrics[key]
         lines.append(f"{key}: {value:.6f}" if value is not None else f"{key}: undefined (zero variance)")
     lines.extend(["", "Per-level: actual level / n / accuracy / MAE / signed error"])

@@ -1,55 +1,38 @@
-# 统一提示词与测试协议
+# 统一提示词与协议
 
-正式协议是 **isolated-text-v1**。全部参测模型使用相同的评级标尺、题面、去重题解和 std，逐题独立预测。网站只是评分工具，能解析答案文件不等于已经验证测试遵守本协议。
+数据版本 **0.2.0**，主协议 **isolated-text-v2**。87 道题的任务叙述与 147 份代表题解已重新撰写，题意、输入输出、数据范围与可用样例保留，移除来源旁注和未提供附件的识别性文件名。三张图片中的子任务范围表补充文字版。修改不等于消除公开题记忆。
 
-## 直接使用完整请求
+唯一标准请求是 [docs/requests.jsonl](docs/requests.jsonl)，共87行，每行一题。共同提示词见 [docs/prompt.txt](docs/prompt.txt)，哈希清单见 [docs/prompt-manifest.json](docs/prompt-manifest.json)。它们由 benchmark/ 和 CLI 的同一函数生成。仓库不再同时保存另一份 requests.jsonl。
 
-下载参与者包中的 [prompts/requests.jsonl](prompts/requests.jsonl)。文件共 87 行，每行是一个独立请求。将该行的 `messages` 原样作为模型输入，每题不携带其他题目的历史。独立请求可以并发或由支持独立条目的批处理服务执行，无需手动创建 87 次聊天。`response_schema` 描述预期输出，平台支持时可用来约束 JSON 格式。
+## 执行
 
-全部请求均由 CLI 实际使用的同一个函数生成。以下命令可以离线重新导出，不调用模型，也不读取参考标签：
+1. 每题全新无历史上下文，只发送对应行原样的 messages。不同题不能继承父 Agent 分析或其他回答。
+2. 评级者只用文本，不看图，不搜索、联网、读文件、运行代码或调用其他工具。rubric 与 protocol 规则相同。调度者可用工具派发、读取和保存结果。
+3. 固定模型版本与生成参数，不增加技能、示例或自定义标尺。
+4. 保留首次有效输出，仅调用失败或格式无效可用相同输入重试，记录原因，不按得分改答案。
+5. 输出 id、level、label、reason。合并87行 JSON 为 answers.jsonl，一次提交。网站只评分 id 与 level，不能验证实际执行方式。
 
-```bash
-python3 -m luogubench export-prompts --bundle benchmark --out my-prompts
-```
-
-输出 `prompt.txt`、`requests.jsonl` 和包含 SHA-256 指纹的 `manifest.json`。共同提示词见 [prompts/prompt.txt](prompts/prompt.txt)，它由冻结的 `benchmark/rubric.txt` 与 `benchmark/protocol.txt` 组成。每题完整提示词在其后接上 `<problem_material>` 中的材料 JSON。
+按 [AGENT_RUN.md](AGENT_RUN.md) 可自动调度全部题。只能共享历史时标注 external-agent-v1，另行报告，不能当成主协议结果。
 
 <a id="batch"></a>
-
-## 一次启动批量评测
-
-**使用 Agent：** 将任务包目录交给 Agent，让它按 [AGENT_RUN.md](AGENT_RUN.md) 自动派发任务并生成 `answers.jsonl`。不强制使用 CLI。有无历史的独立模型调用或子 Agent 能力时，按正式协议并发执行。只能共享会话的 Agent 也可完成并提交，但应注明 `external-agent-v1`，单独报告结果。
-
-**使用脚本：** 接好 `adapters/example_adapter.py` 中的模型客户端后，运行：
+## 脚本入口
 
 ```bash
 python3 -m luogubench run --bundle benchmark --adapter my_adapter.py --model my-model --reasoning medium --jobs 8 --out runs/my-model
 ```
 
-最多同时执行 8 道题，每次仅发送单题 `messages`，不会携带其他题目的历史。每完成一题就校验并保存，最后自动合并为 `runs/my-model/predictions.jsonl`，这个文件可以直接上传网站。`--jobs` 默认是 1，可按模型服务或本地推理能力调整。
+中断后原命令加 --resume，保留已完成有效题，只补缺失题。不得混用不同模型、参数、材料或协议版本的结果。平台并发不足时降低 jobs。
 
-某题失败不影响其他题。用相同命令加 `--resume` 只补缺失或无效的题，保留有效预测。续跑时可调整并发数量，模型、参数、适配器和 Prompt 必须一致。按 Ctrl+C 后停止派发新题，等待在途任务完成或超时并保存结果，再退出。
+离线重新导出标准请求：
 
-平台专用的异步批处理接口需要将请求文件转换为该平台格式，本包的 JSONL 不是所有服务商都能直接接收的 Batch API 文件。无论用哪种调度方式，保持每条请求的单题输入不变。
-
-## 固定的执行规则
-
-1. 每题使用独立评测上下文，只发送该题的一条 `user` 消息，可以并发执行。不要增加自定义角色设定、示例、记忆、技能或针对某个模型重写提示词。调度 Agent 可使用工具派发、读取和保存任务，评级者不调用工具，不继承父会话或其他题目的历史。
-2. 主协议只使用文本，不调用搜索、联网、读文件、看图、代码执行或其他工具。材料中的图片引用保留为位置标记。共同标尺保留了通用的看图说明，紧随其后的 `isolated-text-v1` 约束进一步限定本次只用文本，以该约束为准。
-3. 评级对象是选手首次独立发现并实现满分解法的难度。若有多种解法，以更简单可靠的满分做法为主要依据，不把阅读题解的难度当作解题难度。
-4. 同一轮固定模型版本、推理设置、温度和输出上限。不同模型不支持的参数保持其默认值，对外报告成绩时说明实际配置。统一提示词不代表推理预算也相同。
-5. 每题保留首次有效输出。仅对调用失败或格式无效的响应按相同设置重试，并记录重试情况，不依据标签或网站得分挑选、改写答案。
-
-工具支持批量调度，**数据版本仍为 0.1.0，逐题提示词内容和指纹保持不变**。若以后改标尺、材料、提示词或评级者的执行规则，应另立版本，不能混入同一协议成绩。共享上下文结果始终另行报告。
-
-## 统一模型输出，合并一次提交
-
-模型每题输出一个 JSON 对象，不加 Markdown 围栏：
-
-```json
-{"id":"请求中的原始ID","level":5,"label":"提高","reason":"约100到250字中文，说明关键思维、知识、实现负担及相邻档位边界。"}
+```bash
+python3 -m luogubench export-prompts --bundle benchmark --out regenerated-prompts
 ```
 
-`level` 是 1–8 的整数，`label` 使用共同提示词中对应的精确名称。把 87 个对象各压成一行，合并为一个 `answers.jsonl`，在网站一次上传。网站只评分 `id` 和 `level`，保留 `label` 和 `reason` 即可，不需要另传文件或元数据。只有两个字段的文件也能算分，但无法据此验证它来自完整的正式测试。
+导出目录需为空，该命令不调用模型。输出 requests.jsonl、prompt.txt、manifest.json，与网站的 requests.jsonl、prompt.txt、prompt-manifest.json 分别对应。
 
-主指标为 Spearman，理由质量不自动评分。网站报告中的 `web-file-v1` 表示文件评分入口，并不认证模型身份或执行协议。旧 Luna medium 成绩使用 `legacy-agent-3x29`，属于历史参考，不能当作统一逐题协议的新结果。
+## 指标
+
+按完全命中率、相差不超过一档命中率、Spearman ρ 的顺序报告。相差不超过一档包含完全命中，条件是绝对档位误差不超过一，目标100%。Spearman 使用并列平均秩，目标1.0000，常数预测为 null。目标不是实测保证，相关系数也不是准确率。不合成为单一总分。
+
+旧数据0.1.0、旧标尺或旧协议的成绩仅作历史记录。新版尚未产生真实模型成绩，不能用旧结果替代。
