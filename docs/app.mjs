@@ -3,28 +3,12 @@ import {parseAnswerFile,summarize,sha256} from './scoring.mjs';
 import {referenceLevels} from './reference.mjs';
 const $=id=>document.getElementById(id);
 let selected=null,report=null;
-for(const result of config.historical_results??[]){
- const row=document.createElement('article');row.className='history-result';
- const name=document.createElement('div');const heading=document.createElement('h3');
- heading.textContent=result.display_name;name.append(heading);
- const note=document.createElement('p');note.textContent=result.execution_summary;name.append(note);row.append(name);
- const values=document.createElement('dl');
- for(const [label,value] of [
-  ['完全命中率',`${(result.accuracy*100).toFixed(1)}%`],
-  ['相差不超过一档',`${(result.within_one_level*100).toFixed(1)}%`],
-  ['Spearman ρ',result.spearman_rho.toFixed(4)]
- ]){
-  const group=document.createElement('div');const term=document.createElement('dt');const score=document.createElement('dd');
-  term.textContent=label;score.textContent=value;group.append(term,score);values.append(group);
- }
- row.append(values);$('historical-results').append(row);
-}
 const save=(text,name,type='application/json')=>{const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 function reset(){report=null;for(const id of ['accuracy','within-one','rho'])$(id).textContent='—';$('coverage').textContent='等待完整答案';$('exact-count').textContent='预测档位与参考档位相同';$('within-count').textContent='包括完全命中及相邻档位';$('rho-note').textContent='使用并列平均秩计算排序相关性';$('download-report').hidden=true;}
 function fail(error){$('error').textContent=error instanceof Error?error.message:String(error);$('error').hidden=false;}
 $('answers').addEventListener('change',async()=>{
  const file=$('answers').files?.[0];selected=null;$('score').disabled=true;$('error').hidden=true;reset();
- if(!file){$('filename').textContent='尚未选择 · 最大 4 MB';return;}
+ if(!file){$('filename').textContent='尚未选择文件';return;}
  $('filename').textContent=file.name;
  try{
   if(!file.name.toLowerCase().endsWith('.jsonl'))throw Error('请选择 .jsonl 答案文件。');
