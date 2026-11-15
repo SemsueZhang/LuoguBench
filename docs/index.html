@@ -24,14 +24,22 @@
       <p class="version">数据 v0.2.0 <span aria-hidden="true">·</span> 题面、题解与参考程序</p>
     </div>
     <section class="history" aria-labelledby="history-title">
-      <div class="history-heading"><h2 id="history-title">历史成绩</h2></div>
+      <div class="history-heading"><h2 id="history-title">已公布成绩</h2></div>
       <table class="history-table">
         <thead><tr><th scope="col">模型</th><th scope="col">完全命中率</th><th scope="col">相差 ≤ 一档</th><th scope="col">Spearman ρ</th></tr></thead>
         <tbody>
+          <tr data-result-id="gpt-6-1-sol-high-solve-simulation-20261115"><th scope="row">GPT-6.1 Sol<span>high · 数据 v0.2.0 · 独立上下文</span><span class="result-badge">有额外提示词</span></th><td data-label="完全命中率">51.7%</td><td data-label="相差≤一档">95.4%</td><td data-label="Spearman ρ">0.9687</td></tr>
+          <tr data-result-id="gemini-4-argon-murasam"><th scope="row">Gemini 4 Argon<span>Murasam 提供 · 截图结果</span></th><td data-label="完全命中率">51.7%</td><td data-label="相差≤一档">96.6%</td><td data-label="Spearman ρ">0.9711</td></tr>
           <tr><th scope="row">GPT-6 Luna<span>medium · 数据 v0.1.0</span></th><td data-label="完全命中率">55.2%</td><td data-label="相差≤一档">94.3%</td><td data-label="Spearman ρ">0.9397</td></tr>
-          <tr><th scope="row">Claude Opus 5.5<span>jason_sun 贡献</span></th><td data-label="完全命中率">57.5%</td><td data-label="相差≤一档">96.6%</td><td data-label="Spearman ρ">0.9626</td></tr>
+          <tr><th scope="row">Claude Opus 5.5<span>jason_sun 提供 · 截图结果</span></th><td data-label="完全命中率">57.5%</td><td data-label="相差≤一档">96.6%</td><td data-label="Spearman ρ">0.9626</td></tr>
         </tbody>
       </table>
+      <details class="result-prompt" id="sol-extra-prompt">
+        <summary>Sol high 的额外提示词</summary>
+        <p>每题均在统一提示词后、题目材料前加入：</p>
+        <blockquote>根据综合情况，自己从头到尾模拟一遍真实做题时的状态，不要因为知道了做法和代码后就觉得更简单/更难。</blockquote>
+      </details>
+      <p class="result-note">Gemini 与 Claude 的成绩按截图显示值收录，数据版本、运行协议及是否使用额外提示词未提供。</p>
     </section>
   </section>
 

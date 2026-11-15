@@ -51,6 +51,12 @@ h1 { font-size: clamp(48px,5vw,72px); font-weight: 600; line-height: 1.2; letter
 .history-table tbody th { padding: 25px 16px 25px 0; font-size: 19px; font-weight: 550; line-height: 1.5; }
 .history-table tbody th span { display: block; font-size: 16px; font-weight: 400; margin-top: 7px; opacity: .65; }
 .history-table td { font-size: clamp(20px,1.7vw,26px); font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -.7px; padding-left: 13px; white-space: nowrap; }
+.history-table tbody th .result-badge { display: inline-block; padding: 2px 9px; border: 1px solid rgb(184 136 247 / 36%); border-radius: 4px; background: rgb(126 68 193 / 18%); color: #d8b8ff; font-size: 14px; opacity: 1; }
+.result-prompt { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px; font-size: 16px; }
+.result-prompt summary { width: fit-content; }
+.result-prompt p { margin-top: 12px; opacity: .7; }
+.result-prompt blockquote { margin: 10px 0 0; padding-left: 14px; border-left: 2px solid #a87be6; line-height: 1.8; }
+.result-note { margin-top: 16px; font-size: 15px; line-height: 1.7; opacity: .65; }
 .evaluation { padding-top: 36px; border-top: 1px solid var(--line); }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 36px; }
 .section-heading h2 { font-size: 34px; font-weight: 550; letter-spacing: -1px; }
