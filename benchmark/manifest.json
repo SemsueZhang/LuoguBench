@@ -2,7 +2,7 @@
   "n": 87,
   "shards": 3,
   "input_file_sha256": "e9f940813f15639f76368635e3c16ba00c0445e22ea5988912054ac6a7929bc6",
-  "rubric_sha256": "b6666d36985f9a574925ad9cca9c3e86a8bcc5e54ab6aa8404757151cbf7a1c3",
+  "rubric_sha256": "9e1b163c3098b64e588272bb29f35c30a7068c2924a4274f24b0661c07d69e77",
   "images": [
     {
       "filename": "assets/I0fba28431f666508.png",
@@ -444,7 +444,7 @@
   "dataset_version": "0.2.0",
   "labels_sha256": "9bb71647a553a95602dabf3773507e226d0993847a8f379e063e56e14358bf53",
   "protocol_id": "isolated-text-v2",
-  "rubric_file_sha256": "4f2137a6b87bbef8c4072b0cb79da10c415230613a639a5faacbe2161087fc6e",
+  "rubric_file_sha256": "5fe56454525382f343fea2d4eb1ad8d7816eea5795ab6ffca326def87c721675",
   "protocol_file_sha256": "9723583776283e830a6e6c6f6ca7bf2a863ddb41b940528c92b605c41b0b9903",
   "schema_file_sha256": "c8a31564dcdef084944af481517e4198cd305bf5ef041a752f3a28b4ee9790cf"
 }

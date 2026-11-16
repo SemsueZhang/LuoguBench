@@ -3,8 +3,8 @@ export default {
   "dataset_version": "0.2.0",
   "protocol_id": "isolated-text-v2",
   "n": 87,
-  "bundle_fingerprint": "3b6e2c7e8fed3b335a5ef57842f9f9461efd62870aab93b030f3beeebd92fae4",
-  "prompt_set_sha256": "63133c3980ac38cb3487f76c74f53c4195398ed38fcd05a7cbee4f1ff1f614f1",
+  "bundle_fingerprint": "6118e2773efc9872b9c6a3aa300a25050261123deff93e1516bc817c2e41f7ca",
+  "prompt_set_sha256": "8975e33c9f6957e00d1c17bac6f25c68590ffd5cee056be5bb71ab38ec2b247a",
   "labels_sha256": "9bb71647a553a95602dabf3773507e226d0993847a8f379e063e56e14358bf53",
   "ids": [
     "B58304d76a810",

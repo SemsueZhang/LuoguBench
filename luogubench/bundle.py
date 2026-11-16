@@ -115,8 +115,7 @@ def load_bundle(path):
 
 
 def common_prompt(bundle):
-    return (bundle["rubric"].rstrip() + "\n\n" + bundle["protocol_note"].rstrip() +
-            "\n\n")
+    return bundle["rubric"].rstrip() + "\n\n"
 
 
 def item_prompt(bundle, item):

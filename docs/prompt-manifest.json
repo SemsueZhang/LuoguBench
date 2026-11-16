@@ -4,8 +4,8 @@
   "dataset_version": "0.2.0",
   "protocol_id": "isolated-text-v2",
   "n": 87,
-  "bundle_fingerprint": "3b6e2c7e8fed3b335a5ef57842f9f9461efd62870aab93b030f3beeebd92fae4",
-  "prompt_set_sha256": "63133c3980ac38cb3487f76c74f53c4195398ed38fcd05a7cbee4f1ff1f614f1",
-  "common_prompt_sha256": "cc3c87d2085749861f6552241da081cf865e3aaf88586d151853dca6d546958b",
-  "requests_file_sha256": "192063e0cbe8bd719df2c50ead23d964b68a5d648259c8cd96d466879d606fd8"
+  "bundle_fingerprint": "6118e2773efc9872b9c6a3aa300a25050261123deff93e1516bc817c2e41f7ca",
+  "prompt_set_sha256": "8975e33c9f6957e00d1c17bac6f25c68590ffd5cee056be5bb71ab38ec2b247a",
+  "common_prompt_sha256": "5fe56454525382f343fea2d4eb1ad8d7816eea5795ab6ffca326def87c721675",
+  "requests_file_sha256": "8144ecd6e211b5e0fe9397003524747552a21fe570363248f2756701e535f6bd"
 }

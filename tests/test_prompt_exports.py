@@ -6,17 +6,19 @@ import unittest
 
 from luogubench.bundle import export_prompts, file_digest, load_bundle, prompt_digest
 from luogubench.core import read_jsonl, sha
+from luogubench.prompt import RUBRIC, render_prompt
 from luogubench.runner import run_adapter
 
 ROOT = Path(__file__).resolve().parents[1]
 if not (ROOT / "benchmark").exists():
     ROOT = ROOT / "publish/LuoguBench"
-FROZEN_PROMPT_SET = "63133c3980ac38cb3487f76c74f53c4195398ed38fcd05a7cbee4f1ff1f614f1"
+FROZEN_PROMPT_SET = "8975e33c9f6957e00d1c17bac6f25c68590ffd5cee056be5bb71ab38ec2b247a"
 
 
 class PublicPromptContract(unittest.TestCase):
     def test_exported_artifacts_reproduce_the_frozen_input_contract(self):
         bundle = load_bundle(ROOT / "benchmark")
+        self.assertEqual(bundle["rubric"].rstrip(), RUBRIC)
         self.assertEqual(prompt_digest(bundle), FROZEN_PROMPT_SET)
         self.assertFalse((ROOT / "prompts/requests.jsonl").exists())
         self.assertFalse((ROOT / "docs/agent-run.md").exists())
@@ -35,6 +37,8 @@ class PublicPromptContract(unittest.TestCase):
             self.assertEqual([r["id"] for r in rows], bundle["ids"])
             self.assertTrue(all(r["protocol_id"] == "isolated-text-v2" for r in rows))
             self.assertTrue(all(len(r["messages"]) == 1 and r["messages"][0]["role"] == "user" for r in rows))
+            for row, item in zip(rows, bundle["items"]):
+                self.assertEqual(row["messages"][0]["content"], render_prompt(item))
             self.assertEqual((ROOT / "docs/prompt.txt").read_bytes(), (out / "prompt.txt").read_bytes())
             self.assertEqual((ROOT / "docs/requests.jsonl").read_bytes(), (out / "requests.jsonl").read_bytes())
             with self.assertRaisesRegex(ValueError, "must be empty"):
